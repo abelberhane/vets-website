@@ -435,6 +435,7 @@ describe('VAOS newAppointmentFlow', () => {
         const nextState = newAppointmentFlow.clinicChoice.next(state, dispatch);
 
         expect(nextState).to.equal('preferredDate');
+        expect(dispatch.called).to.be.true;
       });
 
       it('should be requestDateTime if user chose that they need a different clinic', () => {
