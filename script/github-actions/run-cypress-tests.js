@@ -7,7 +7,7 @@ const divider = Math.ceil(tests.length / numContainers);
 
 const batch = tests
   .map(test =>
-    test.replace('/home/runner/work/vets-website/vets-website', '../../..'),
+    test.replace('/home/runner/work/vets-website/vets-website', '../..'),
   )
   .slice(step * divider, (step + 1) * divider)
   .join(',');
