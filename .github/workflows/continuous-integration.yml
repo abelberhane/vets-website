@@ -426,18 +426,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-gov-west-1
 
-      - name: Checkout vets-website
-        uses: actions/checkout@v2
+      # - name: Checkout vets-website
+      #   uses: actions/checkout@v2
 
-      - name: Download production build artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: vagovprod.tar.bz2
+      # - name: Download production build artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: vagovprod.tar.bz2
 
-      - name: Unpack build
-        run: |
-          mkdir -p build/vagovprod
-          tar -C build/vagovprod -xjf vagovprod.tar.bz2
+      # - name: Unpack build
+      #   run: |
+      #     mkdir -p build/vagovprod
+      #     tar -C build/vagovprod -xjf vagovprod.tar.bz2
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -449,8 +449,8 @@ jobs:
             /github/home/.cache/Cypress
             node_modules
 
-      - name: Start server
-        run: node src/platform/testing/e2e/test-server.js --buildtype vagovprod --port=3001 &
+      # - name: Start server
+      #   run: node src/platform/testing/e2e/test-server.js --buildtype vagovprod --port=3001 &
 
       - name: Run Cypress tests
         run: node script/github-actions/run-cypress-tests.js
