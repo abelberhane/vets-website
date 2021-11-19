@@ -12,7 +12,7 @@ const batch = tests
 
 if (batch !== '') {
   const status = runCommandSync(
-    `yarn cy:run --browser chrome --headless --reporter cypress-multi-reporters --reporter-options "configFile=config/cypress-reporters.json" --spec '${batch}'`,
+    `TESTS=${batch} yarn cy:run --browser chrome --headless --reporter cypress-multi-reporters --reporter-options "configFile=config/cypress-reporters.json" --spec 'script/github-actions/tests/merged-cypress-tests.cypress.spec.js'`,
   );
   process.exit(status);
 } else {
