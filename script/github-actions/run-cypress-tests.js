@@ -16,7 +16,7 @@ const batch = tests
 runCommandSync(`mkdir -p src/tests/`);
 runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
 
-const fileText = `describe('Batch 1', () => {
+const fileText = `describe('Batch ${step}', () => {
   require('${batch}');
 });`;
 
