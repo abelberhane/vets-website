@@ -16,11 +16,11 @@ const batch = tests
 runCommandSync(`mkdir -p src/tests/`);
 runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
 
-const testt = `describe('Batch 1', () => {
+const fileText = `describe('Batch 1', () => {
   require('${batch}');
 });`;
 
-fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', testt);
+fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', fileText);
 
 if (batch !== '') {
   const status = runCommandSync(
