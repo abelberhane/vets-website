@@ -33,7 +33,16 @@ module.exports = on => {
           },
         },
       };
-
+      console.log("1111");
+      console.log("1111");
+      console.log("1111");
+      console.log("1111");
+      console.log(process.env.TESTS);
+      console.log("2222");
+      console.log("2222");
+      console.log("2222");
+      console.log("2222");
+      console.log(process.env.CYPRESS_TESTS);
       on('file:preprocessor', webpackPreprocessor(options));
     },
   );

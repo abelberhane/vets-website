@@ -1,9 +1,13 @@
-const tests = process.env.TESTS;
-const splitTests = tests.split(',');
+// const splitTests = process.env.CYPRESS_TESTS.split(',');
+const testt = process.env;
 
 describe('Batch 1', () => {
-  for (const test of splitTests) {
-    // eslint-disable-next-line import/no-dynamic-require
-    require(test);
-  }
+  it('Batch 1', () => {
+    // cy.task('log', process.env);
+    cy.task('log', testt);
+  });
+  // for (const test of splitTests) {
+  //   // eslint-disable-next-line import/no-dynamic-require
+  //   require(`${test}`);
+  // }
 });
