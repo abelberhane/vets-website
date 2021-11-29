@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 const { integrationFolder, testFiles } = require('../../config/cypress.json');
-
 const pattern = path.join(__dirname, '../..', integrationFolder, testFiles);
 const tests = glob.sync(pattern);
 
@@ -19,14 +18,14 @@ const batch = tests
   .slice(step * divider, (step + 1) * divider)
   .join(`');})();(function() {require('`);
 
-runCommandSync(`mkdir -p src/tests/`);
-runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
+// runCommandSync(`mkdir -p src/tests/`);
+// runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
 
-const fileText = `describe('Batch ${step}', () => {
-  (function() {require('${batch}');})();
-});`;
+// const fileText = `describe('Batch ${step}', () => {
+//   (function() {require('${batch}');})();
+// });`;
 
-fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', fileText);
+// fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', fileText);
 
 if (batch !== '') {
   const status = runCommandSync(
