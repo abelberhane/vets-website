@@ -1,31 +1,39 @@
 const { runCommandSync } = require('../utils');
 const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
-const { integrationFolder, testFiles } = require('../../config/cypress.json');
-const pattern = path.join(__dirname, '../..', integrationFolder, testFiles);
-const tests = glob.sync(pattern);
 
-// const tests = JSON.parse(process.env.TESTS);
+const tests = JSON.parse(process.env.TESTS);
 const step = 1;
 const numContainers = 8;
 const divider = Math.ceil(tests.length / numContainers);
 
 const batch = tests
-  // .map(test =>
-  //   test.replace('/home/runner/work/vets-website/vets-website', '../..'),
-  // )
+  .map(test =>
+    test.replace('/home/runner/work/vets-website/vets-website', '../..'),
+  )
   .slice(step * divider, (step + 1) * divider)
-  .join(`');})();(function() {require('`);
+  .join(`'), test:`)
+  .split(`, test:`)
+  .map(
+    test =>
+      `'${(Math.random() + 1)
+        .toString(36)
+        .substring(7)}': () => require('${test}`,
+  )
+  .join();
 
-// runCommandSync(`mkdir -p src/tests/`);
-// runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
+runCommandSync(`mkdir -p src/tests/`);
+runCommandSync(`touch src/tests/merged-cypress-tests.cypress.spec.js`);
 
-// const fileText = `describe('Batch ${step}', () => {
-//   (function() {require('${batch}');})();
-// });`;
+const fileText = `const tests = Object.entries({
+  ${batch}'),});
 
-// fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', fileText);
+  describe('Batch ${step}', () => {
+    for (const element of tests) {
+      element[1]();
+    }
+  });`;
+
+fs.writeFileSync('src/tests/merged-cypress-tests.cypress.spec.js', fileText);
 
 if (batch !== '') {
   const status = runCommandSync(
