@@ -52,6 +52,10 @@ const formFields = {
   email: 'email',
   altEmail: 'altEmail',
   phoneNumber: 'phoneNumber',
+  // intermediate tutorial
+  expandUnder: 'expandUnder',
+  conditionalFields: 'conditionalFields',
+  conditionalPages: 'conditionalPages',
 };
 
 function hasDirectDeposit(formData) {
@@ -214,6 +218,141 @@ const formConfig = {
               [formFields.viewStopWarning]: {
                 type: 'object',
                 properties: {},
+              },
+            },
+          },
+        },
+      },
+    },
+    intermediateTutorial: {
+      title: 'Intermediate tutorial examples',
+      pages: {
+        [formPages.expandUnder]: {
+          path: 'expand-under',
+          title: 'Expand under title', // ignored?
+          uiSchema: {
+            expandUnderExample: {
+              'ui:title': 'Expand under example',
+              'ui:description': 'Choose "Yes" to reveal a conditional field',
+              'ui:widget': 'yesNo',
+              'ui:options': {
+                labels: {
+                  Y: 'Yes, this is what I want',
+                  N: 'No, I do not want this',
+                },
+                widgetProps: {
+                  Y: { 'data-info': 'yes' },
+                  N: { 'data-info': 'no' },
+                },
+                // Only added to the radio when it is selected
+                // a11y requirement: aria-describedby ID's *must* exist on the page;
+                // and we conditionally add content based on the selection
+                selectedProps: {
+                  Y: { 'aria-describedby': 'root_myConditionalField-label' },
+                  // this ID doesn't exist, setting this would cause an axe error
+                  // N: { 'aria-describedby': 'different_id' },
+                },
+              },
+            },
+            myConditionalField: {
+              'ui:title': 'My conditional field title',
+              'ui:description': 'My conditional field description',
+              'ui:options': {
+                expandUnder: 'expandUnderExample',
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              expandUnderExample: {
+                type: 'boolean',
+              },
+              myConditionalField: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        [formPages.conditionalFields]: {
+          path: 'conditionally-hidden',
+          title: 'Conditionally hidden',
+          uiSchema: {
+            conditionalFieldExample: {
+              'ui:title': 'Conditionally hidden example',
+              'ui:description':
+                'Choose "Yes" to reveal a conditionally hidden field',
+              'ui:widget': 'yesNo',
+              'ui:options': {
+                labels: {
+                  Y: 'Yes, this is what I want',
+                  N: 'No, I do not want this',
+                },
+                widgetProps: {
+                  Y: { 'data-info': 'yes' },
+                  N: { 'data-info': 'no' },
+                },
+                // Only added to the radio when it is selected
+                // a11y requirement: aria-describedby ID's *must* exist on the page;
+                // and we conditionally add content based on the selection
+                selectedProps: {
+                  Y: { 'aria-describedby': 'some_id' },
+                  // this ID doesn't exist, setting this would cause an axe error
+                  // N: { 'aria-describedby': 'different_id' }
+                },
+              },
+            },
+            myConditionalField: {
+              'ui:title': 'My conditional field',
+              'ui:options': {
+                hideIf: formData => formData.conditionalFieldExample !== true,
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              conditionalFieldExample: {
+                type: 'boolean',
+              },
+              myConditionalField: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        [formPages.conditionalPages]: {
+          'ui:title': 'Conditional page',
+          depends: form => form.conditionalFieldExample,
+          uiSchema: {
+            conditionalPageExample: {
+              'ui:title': 'Conditional Page',
+              'ui:description': 'Shown when conditional field value is true',
+              'ui:widget': 'yesNo',
+              'ui:options': {
+                labels: {
+                  Y: 'Yes, this is what I want',
+                  N: 'No, I do not want this',
+                },
+                widgetProps: {
+                  Y: { 'data-info': 'yes' },
+                  N: { 'data-info': 'no' },
+                },
+                // Only added to the radio when it is selected
+                // a11y requirement: aria-describedby ID's *must* exist on the page;
+                // and we conditionally add content based on the selection
+                selectedProps: {
+                  Y: { 'aria-describedby': 'some_id' },
+                  N: { 'aria-describedby': 'different_id' },
+                },
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              myField: {
+                type: 'boolean',
               },
             },
           },
