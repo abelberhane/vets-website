@@ -56,6 +56,10 @@ const formFields = {
   expandUnder: 'expandUnder',
   conditionalFields: 'conditionalFields',
   conditionalPages: 'conditionalPages',
+  // available features and usage guidelines
+  radioButtonGroup: 'radioButtonGroup',
+  checkboxGroup: 'checkboxGroup',
+  checkboxGroup2: 'checkboxGroup2',
 };
 
 function hasDirectDeposit(formData) {
@@ -102,6 +106,7 @@ const formConfig = {
     usaPhone,
   },
   chapters: {
+    // ** Complex Form
     applicantInformationChapter: {
       title: 'Applicant Information (Basic Form elements)',
       pages: {
@@ -224,7 +229,9 @@ const formConfig = {
         },
       },
     },
-    intermediateTutorial: {
+
+    // ** Intermediate tutorial examples
+    intermediateTutorialChapter: {
       title: 'Intermediate tutorial examples',
       pages: {
         [formPages.expandUnder]: {
@@ -353,6 +360,92 @@ const formConfig = {
             properties: {
               myField: {
                 type: 'boolean',
+              },
+            },
+          },
+        },
+      },
+    },
+
+    //
+    availableFeaturesAndUsageChapter: {
+      title: 'Available features and usage guidelines examples',
+      pages: {
+        [formPages.radioButtonGroup]: {
+          'ui:title': 'Radio button group',
+          path: 'radio-button-group',
+          title: 'Radio button group example',
+          uiSchema: {
+            favoriteAnimal: {
+              'ui:widget': 'radio',
+              'ui:options': {
+                labels: {
+                  dog: 'Dog',
+                  cat: 'Cat',
+                  octopus: 'Octopus',
+                  sloth: 'Sloth',
+                },
+                widgetProps: {
+                  dog: { 'data-info': 'dog_1' },
+                  cat: { 'data-info': 'cat_2' },
+                  octopus: { 'data-info': 'octopus_3' },
+                  sloth: { 'data-info': 'sloth_4' },
+                },
+                // Only added to the radio when it is selected
+                // a11y requirement: aria-describedby ID's *must* exist on the page; and we
+                // conditionally add content based on the selection
+                selectedProps: {
+                  // dog: { 'aria-describedby': 'some_id_1' },
+                  // cat: { 'aria-describedby': 'some_id_2' },
+                  // octopus: { 'aria-describedby': 'some_id_3' },
+                  // sloth: { 'aria-describedby': 'some_id_4' },
+                },
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              favoriteAnimal: {
+                type: 'string',
+                enum: ['dog', 'cat', 'octopus', 'sloth'],
+              },
+            },
+          },
+        },
+        [formPages.checkboxGroup]: {
+          'ui:title': 'Checkbox group pattern',
+          path: 'checkbox-group-pattern',
+          title: 'Checkbox group pattern',
+          uiSchema: {
+            'view:booksRead': {
+              'ui:title': 'Which books have you read?',
+              'ui:description': 'You may check more than one.',
+              hasReadPrideAndPrejudice: {
+                'ui:title': 'Pride and Prejudice by Jane Austen',
+              },
+              hasReadJaneEyre: {
+                'ui:title': 'Jane Eyre by Charlotte Brontë',
+              },
+              hasReadGreatGatsby: {
+                'ui:title': 'The Great Gatsby by F. Scott Fitzgerald',
+              },
+              hasReadBuddenbrooks: {
+                'ui:title': 'Buddenbrooks by Thomas Mann',
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              'view:booksRead': {
+                type: 'object',
+                properties: {
+                  hasReadPrideAndPrejudice: { type: 'boolean' },
+                  hasReadJaneEyre: { type: 'boolean' },
+                  hasReadGreatGatsby: { type: 'boolean' },
+                  hasReadBuddenbrooks: { type: 'boolean' },
+                },
               },
             },
           },
