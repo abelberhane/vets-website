@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "title": "Endpoint failure",
+      "detail": "VBS endpoint is down.",
+      "code": "400",
+      "status": "400"
+    }
+  ]
+}

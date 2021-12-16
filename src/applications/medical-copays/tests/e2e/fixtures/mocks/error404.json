@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "title": "Records not found",
+      "detail": "The records requested were not found.",
+      "code": "404",
+      "status": "404"
+    }
+  ]
+}
