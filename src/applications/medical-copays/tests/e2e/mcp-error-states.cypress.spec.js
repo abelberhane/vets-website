@@ -1,8 +1,8 @@
 import mockFeatureToggles from './fixtures/mocks/feature-toggles.json';
-import error500 from './fixtures/mocks/error500.json';
-import error404 from './fixtures/mocks/error404.json';
-import error400 from './fixtures/mocks/error400.json';
 import mockUser from './fixtures/mocks/mock-user.json';
+import error400 from './fixtures/mocks/error400.json';
+import error404 from './fixtures/mocks/error404.json';
+import error500 from './fixtures/mocks/error500.json';
 
 describe('Medical Copays - Error States', () => {
   beforeEach(() => {
@@ -14,14 +14,14 @@ describe('Medical Copays - Error States', () => {
     cy.login(mockUser);
   });
 
-  it('displays error alert - 500', () => {
+  it('displays error alert - 400', () => {
     cy.intercept('GET', '/v0/medical_copays', {
-      statusCode: 500,
-      body: error500,
-    }).as('copays500');
+      statusCode: 400,
+      body: error400,
+    }).as('copays400');
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
     cy.wait('@features');
-    cy.wait('@copays500');
+    cy.wait('@copays400');
     cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('error-alert').should('be.visible');
     cy.injectAxe();
@@ -42,19 +42,33 @@ describe('Medical Copays - Error States', () => {
     cy.axeCheck();
   });
 
-  it('displays error alert - 400', () => {
+  it('displays error alert - 500', () => {
     cy.intercept('GET', '/v0/medical_copays', {
-      statusCode: 400,
-      body: error400,
-    }).as('copays400');
+      statusCode: 500,
+      body: error500,
+    }).as('copays500');
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
     cy.wait('@features');
-    cy.wait('@copays400');
+    cy.wait('@copays500');
     cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('error-alert').should('be.visible');
     cy.injectAxe();
     cy.axeCheck();
   });
 
-  // TODO: Add tests for No-history, Not-enrolled, and Deceased alerts.
+  it('displays no-history alert', () => {
+    cy.intercept('GET', '/v0/medical_copays', {
+      statusCode: 200,
+      body: { data: [] },
+    }).as('copaysNoHistory');
+    cy.visit('/health-care/pay-copay-bill/your-current-balances/');
+    cy.wait('@features');
+    cy.wait('@copaysNoHistory');
+    cy.findByTestId('overview-page-title').should('exist');
+    cy.findByTestId('no-history-alert').should('be.visible');
+    cy.injectAxe();
+    cy.axeCheck();
+  });
+
+  // TODO: Add tests for Not-enrolled and Deceased alerts.
 });
