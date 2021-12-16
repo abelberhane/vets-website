@@ -1,3 +1,10 @@
+/**
+ * [TestRail-integrated] Spec for Medical Copays
+ * @testrailinfo projectId 7
+ * @testrailinfo suiteId 8
+ * @testrailinfo groupId 3240
+ * @testrailinfo runName MCP-e2e-ErrorStates
+ */
 import mockFeatureToggles from './fixtures/mocks/feature-toggles.json';
 import mockUser from './fixtures/mocks/mock-user.json';
 import error400 from './fixtures/mocks/error400.json';
@@ -14,7 +21,7 @@ describe('Medical Copays - Error States', () => {
     cy.login(mockUser);
   });
 
-  it('displays error alert - 400', () => {
+  it('displays error alert - 400 - C12812', () => {
     cy.intercept('GET', '/v0/medical_copays', {
       statusCode: 400,
       body: error400,
@@ -28,7 +35,7 @@ describe('Medical Copays - Error States', () => {
     cy.axeCheck();
   });
 
-  it('displays error alert - 404', () => {
+  it('displays error alert - 404 - C12813', () => {
     cy.intercept('GET', '/v0/medical_copays', {
       statusCode: 404,
       body: error404,
@@ -42,7 +49,7 @@ describe('Medical Copays - Error States', () => {
     cy.axeCheck();
   });
 
-  it('displays error alert - 500', () => {
+  it('displays error alert - 500 - C12814', () => {
     cy.intercept('GET', '/v0/medical_copays', {
       statusCode: 500,
       body: error500,
@@ -56,7 +63,7 @@ describe('Medical Copays - Error States', () => {
     cy.axeCheck();
   });
 
-  it('displays no-history alert', () => {
+  it('displays no-history alert - C12815', () => {
     cy.intercept('GET', '/v0/medical_copays', {
       statusCode: 200,
       body: { data: [] },
@@ -70,5 +77,5 @@ describe('Medical Copays - Error States', () => {
     cy.axeCheck();
   });
 
-  // TODO: Add tests for Not-enrolled and Deceased alerts.
+  // TODO: Add no-healthcare alert test (TR Case ID C12816).
 });
