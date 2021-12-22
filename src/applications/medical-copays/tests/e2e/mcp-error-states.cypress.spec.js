@@ -13,11 +13,9 @@ import error500 from './fixtures/mocks/error500.json';
 
 describe('Medical Copays - Error States', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/v0/feature_toggles*', {
-      statusCode: 200,
-      body: mockFeatureToggles,
-    }).as('features');
+    cy.intercept('/v0/feature_toggles*', mockFeatureToggles).as('features');
     cy.visit('/');
+    cy.wait('@features');
     cy.login(mockUser);
   });
 
@@ -27,9 +25,7 @@ describe('Medical Copays - Error States', () => {
       body: error400,
     }).as('copays400');
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
-    cy.wait('@features');
     cy.wait('@copays400');
-    cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('error-alert').should('be.visible');
     cy.injectAxe();
     cy.axeCheck();
@@ -41,9 +37,7 @@ describe('Medical Copays - Error States', () => {
       body: error404,
     }).as('copays404');
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
-    cy.wait('@features');
     cy.wait('@copays404');
-    cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('error-alert').should('be.visible');
     cy.injectAxe();
     cy.axeCheck();
@@ -55,9 +49,7 @@ describe('Medical Copays - Error States', () => {
       body: error500,
     }).as('copays500');
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
-    cy.wait('@features');
     cy.wait('@copays500');
-    cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('error-alert').should('be.visible');
     cy.injectAxe();
     cy.axeCheck();
@@ -71,7 +63,6 @@ describe('Medical Copays - Error States', () => {
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
     cy.wait('@features');
     cy.wait('@copaysNoHistory');
-    cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId('no-history-alert').should('be.visible');
     cy.injectAxe();
     cy.axeCheck();
