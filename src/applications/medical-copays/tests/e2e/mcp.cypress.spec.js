@@ -17,13 +17,12 @@ describe('Medical Copays', () => {
     cy.intercept('GET', '/v0/feature_toggles*', mockFeatureToggles);
     cy.intercept('GET', '/v0/medical_copays', mockCopays);
     cy.visit('/health-care/pay-copay-bill/your-current-balances/');
-    cy.findByTestId('overview-page-title').should('exist');
-    cy.injectAxe();
-    cy.axeCheck();
   });
 
   it('displays copay balances - C12576', () => {
     cy.findByTestId('overview-page-title').should('exist');
+    cy.injectAxe();
+    cy.axeCheck();
     cy.findByTestId(`balance-card-${id}`).should('exist');
     cy.findByTestId(`amount-${id}`).contains('$15.00');
     cy.findByTestId(`facility-city-${id}`).contains(
@@ -35,6 +34,8 @@ describe('Medical Copays', () => {
     cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId(`detail-link-${id}`).click();
     cy.findByTestId('detail-page-title').should('exist');
+    cy.injectAxe();
+    cy.axeCheck();
     cy.findByTestId(`updated-date`).contains('November 15, 2019');
     cy.findByTestId(`status-alert`).contains(
       'Pay your $15.00 balance or request help before December 15, 2019',
@@ -51,6 +52,7 @@ describe('Medical Copays', () => {
     );
   });
 
+  /* eslint-disable va/axe-check-required */
   it('displays download statements - C12578', () => {
     cy.findByTestId('overview-page-title').should('exist');
     cy.findByTestId(`detail-link-${id}`).click();
@@ -58,4 +60,5 @@ describe('Medical Copays', () => {
     cy.findByTestId(`download-statements`).should('exist');
     cy.findAllByText(/November 15, 2019/i).should('exist');
   });
+  /* eslint-enable va/axe-check-required */
 });
