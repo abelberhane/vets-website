@@ -79,14 +79,21 @@ export const Results = ({
               <div
                 className="vads-u-display--flex vads-u-flex-direction--column vads-u-border-top--1px vads-u-border-color--gray-light vads-u-padding-y--4"
                 key={`${title}-${entityUrl?.path}`}
+                data-testid="event-wrapper"
               >
                 {/* Title */}
-                <h2 className="vads-u-margin--0 vads-u-font-size--h4">
+                <h2
+                  className="vads-u-margin--0 vads-u-font-size--h4"
+                  data-testid="event-title"
+                >
                   <a href={entityUrl.path}>{title}</a>
                 </h2>
 
                 {/* Description */}
-                <p className="vads-u-margin--0 vads-u-margin-y--1">
+                <p
+                  className="vads-u-margin--0 vads-u-margin-y--1"
+                  data-testid="event-description"
+                >
                   {fieldDescription}
                 </p>
 
@@ -97,13 +104,19 @@ export const Results = ({
                   </p>
                   <div className="vads-u-display--flex vads-u-flex-direction--column">
                     {/* Starts at and ends at */}
-                    <p className="vads-u-margin--0">
+                    <p
+                      className="vads-u-margin--0"
+                      data-testid="event-date-time"
+                    >
                       {formattedStartsAt} - {formattedEndsAt} {endsAtTimezone}
                     </p>
 
                     {/* Repeats */}
                     {event?.fieldDatetimeRangeTimezone?.length > 1 && (
-                      <p className="vads-u-margin--0">
+                      <p
+                        className="vads-u-margin--0"
+                        data-testid="event-recurrence"
+                      >
                         <i
                           className="fa fa-sync vads-u-font-size--sm vads-u-margin-right--0p5"
                           aria-hidden="true"
@@ -119,7 +132,7 @@ export const Results = ({
                   <p className="vads-u-margin--0 vads-u-margin-right--0p5">
                     <strong>Where:</strong>
                   </p>
-                  <p className="vads-u-margin--0">
+                  <p className="vads-u-margin--0" data-testid="event-location">
                     {sample([
                       'West Bend, Wisconsin',
                       'Austin, Texas',
