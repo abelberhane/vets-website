@@ -4,6 +4,7 @@ import 'cypress-axe';
 import 'cypress-plugin-tab';
 import 'cypress-real-events/support';
 import addContext from 'mochawesome/addContext';
+import chaiSorted from 'chai-sorted';
 import './commands';
 
 Cypress.on('window:before:load', window => {
@@ -51,6 +52,7 @@ beforeEach(() => {
   cy.intercept('GET', '/v0/maintenance_windows', {
     data: [],
   });
+  chai.use(chaiSorted);
 });
 
 // Assign the video path to the context property for failed tests
