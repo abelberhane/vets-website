@@ -25,7 +25,7 @@ describe('Outreach Events', () => {
     return Cypress._.map(startDateTimes, d => d.getTime());
   };
 
-  before(() => {
+  before(function() {
     // Can't run in CI because page requires content-build server too.
     if (Cypress.env('CI')) this.skip();
   });
