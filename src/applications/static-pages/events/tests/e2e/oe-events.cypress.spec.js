@@ -8,22 +8,13 @@
 
 // IMPORTANT: This spec should NOT be run in CI.  Page-under-test is "semi-static," requiring BOTH content-build & vets-website local-servers to be running.
 
+import moment from 'moment-timezone';
+
+import * as helpers from './helpers';
+
 describe('Outreach Events', () => {
   const contentHost = 'localhost:3002';
   const pagePath = '/outreach-and-events/events/';
-  const getEventTimestamps = $dateParagraphs => {
-    const dateTimeRangeStrings = Cypress._.map($dateParagraphs, 'innerText');
-    const startDateTimeStrings = Cypress._.map(
-      dateTimeRangeStrings,
-      s => s.split(' - ')[0] + s.substr(s.lastIndexOf(' ')),
-    );
-    const startDateTimes = Cypress._.map(
-      startDateTimeStrings,
-      s => new Date(s.replace(/\./g, '')),
-    );
-
-    return Cypress._.map(startDateTimes, d => d.getTime());
-  };
 
   before(function() {
     // Can't run in CI because page requires content-build server too.
@@ -60,18 +51,40 @@ describe('Outreach Events', () => {
   /* eslint-disable va/axe-check-required */
   it('shows all upcoming events by default sorted date-ascending - C13152', () => {
     cy.get('[name="filterBy"]').should('have.value', 'upcoming');
-    cy.findByText(/all upcoming/i, { selector: 'strong' }).should('be.visible');
+    cy.get('[data-testid="results-synopsis"]').should(
+      'include.text',
+      'All upcoming',
+    );
     cy.get('[data-testid="event-date-time"]')
       .should('have.length.gt', 0)
       .then($dateParagraphs => {
-        const now = Date.now();
-        const timestamps = getEventTimestamps($dateParagraphs);
-        expect(timestamps).to.be.ascending; // using chai-sorted
-        cy.log(`Event timestamp: ${timestamps[0]}; Now timestamp: ${now}`);
+        const now = moment();
+        const timestamps = helpers.getEventTimestamps($dateParagraphs);
+        expect(timestamps, 'Events are sorted date-ascending').to.be.ascending;
         expect(
-          timestamps[0],
-          '1st sorted upcoming event should be future',
-        ).to.be.greaterThan(now);
+          moment(timestamps[0]).isAfter(now),
+          'First sorted event is future',
+        ).to.be.true;
+      });
+  });
+
+  it('shows past events sorted date-descending', () => {
+    cy.get('[name="filterBy"]').select('past');
+    cy.findByText(/apply filter/i, { selector: 'button' }).click();
+    cy.get('[data-testid="results-synopsis"]').should(
+      'include.text',
+      'Past events',
+    );
+    cy.get('[data-testid="event-date-time"]')
+      .should('have.length.gt', 0)
+      .then($dateParagraphs => {
+        const now = moment();
+        const timestamps = helpers.getEventTimestamps($dateParagraphs);
+        expect(timestamps, 'Events are sorted date-ascending').to.be.descending;
+        expect(
+          moment(timestamps[0]).isBefore(now),
+          'First sorted event is past',
+        ).to.be.true;
       });
   });
   /* eslint-enable va/axe-check-required */

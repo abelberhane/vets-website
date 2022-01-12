@@ -36,7 +36,10 @@ export const Results = ({
     <>
       {/* Showing 10 results for All upcoming */}
       {results && (
-        <p className="vads-u-margin--0 vads-u-margin-top--2 vads-u-margin-bottom--1">
+        <p
+          className="vads-u-margin--0 vads-u-margin-top--2 vads-u-margin-bottom--1"
+          data-testid="results-synopsis"
+        >
           <span>Displaying {resultsStartNumber}</span>
           <span className="vads-u-visibility--screen-reader">through</span>
           <span aria-hidden="true">&ndash;</span>
@@ -137,7 +140,10 @@ export const Results = ({
                       <strong>Where:</strong>
                     </p>
 
-                    <div className="vads-u-display--flex vads-u-flex-direction--column" data-testid="event-location">
+                    <div
+                      className="vads-u-display--flex vads-u-flex-direction--column"
+                      data-testid="event-location"
+                    >
                       {locations?.map(location => (
                         <p className="vads-u-margin--0" key={location}>
                           {location}
