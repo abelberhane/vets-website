@@ -40,13 +40,13 @@ export const Results = ({
           className="vads-u-margin--0 vads-u-margin-top--2 vads-u-margin-bottom--1"
           data-testid="results-synopsis"
         >
-          <span>Displaying {resultsStartNumber}</span>
+          Displaying{' '}
+          <span data-testid="results-start">{resultsStartNumber}</span>
           <span className="vads-u-visibility--screen-reader">through</span>
           <span aria-hidden="true">&ndash;</span>
-          <span>
-            {resultsEndNumber} of {totalResults} results for{' '}
-            <strong>{query}</strong>
-          </span>
+          <span data-testid="results-end">{resultsEndNumber}</span> of{' '}
+          <span data-testid="results-total">{totalResults}</span> results for{' '}
+          <strong data-testid="results-query">{query}</strong>
         </p>
       )}
 
@@ -85,12 +85,12 @@ export const Results = ({
               <div
                 className="vads-u-display--flex vads-u-flex-direction--column vads-u-border-top--1px vads-u-border-color--gray-light vads-u-padding-y--4"
                 key={`${title}-${entityUrl?.path}`}
-                data-testid="event-wrapper"
+                data-testclass="event-wrapper"
               >
                 {/* Title */}
                 <h2
                   className="vads-u-margin--0 vads-u-font-size--h4"
-                  data-testid="event-title"
+                  data-testclass="event-title"
                 >
                   <a href={entityUrl.path}>{title}</a>
                 </h2>
@@ -98,7 +98,7 @@ export const Results = ({
                 {/* Description */}
                 <p
                   className="vads-u-margin--0 vads-u-margin-y--1"
-                  data-testid="event-description"
+                  data-testclass="event-description"
                 >
                   {fieldDescription}
                 </p>
@@ -112,7 +112,7 @@ export const Results = ({
                     {/* Starts at and ends at */}
                     <p
                       className="vads-u-margin--0"
-                      data-testid="event-date-time"
+                      data-testclass="event-date-time"
                     >
                       {formattedStartsAt} - {formattedEndsAt} {endsAtTimezone}
                     </p>
@@ -121,7 +121,7 @@ export const Results = ({
                     {event?.fieldDatetimeRangeTimezone?.length > 1 && (
                       <p
                         className="vads-u-margin--0"
-                        data-testid="event-recurrence"
+                        data-testclass="event-recurrence"
                       >
                         <i
                           className="fa fa-sync vads-u-font-size--sm vads-u-margin-right--0p5"
@@ -142,7 +142,7 @@ export const Results = ({
 
                     <div
                       className="vads-u-display--flex vads-u-flex-direction--column"
-                      data-testid="event-location"
+                      data-testclass="event-location"
                     >
                       {locations?.map(location => (
                         <p className="vads-u-margin--0" key={location}>

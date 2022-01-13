@@ -51,11 +51,8 @@ describe('Outreach Events', () => {
   /* eslint-disable va/axe-check-required */
   it('shows all upcoming events by default sorted date-ascending - C13152', () => {
     cy.get('[name="filterBy"]').should('have.value', 'upcoming');
-    cy.get('[data-testid="results-synopsis"]').should(
-      'include.text',
-      'All upcoming',
-    );
-    cy.get('[data-testid="event-date-time"]')
+    cy.findByTestId('results-query').should('have.text', 'All upcoming');
+    cy.get('[data-testclass="event-date-time"]')
       .should('have.length.gt', 0)
       .then($dateParagraphs => {
         const now = moment();
@@ -68,19 +65,44 @@ describe('Outreach Events', () => {
       });
   });
 
-  it('shows past events sorted date-descending', () => {
+  it('shows specific-date events - C13855', () => {
+    cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
+      const timestamps = helpers.getEventTimestamps($dateParagraphs);
+      const selectedMM = moment(timestamps[0]).format('MM');
+      const selectedDD = moment(timestamps[0]).format('DD');
+
+      cy.get('[name="filterBy"]').select('specific-date');
+      cy.get('[name="startDateMonth"]').select(selectedMM);
+      cy.get('[name="startDateDay"]').select(selectedDD);
+      cy.findByText(/apply filter/i, { selector: 'button' }).click();
+      cy.findByTestId('results-query').should('have.text', 'Specific date');
+      cy.get('[data-testclass="event-date-time"]').then($dateParagraphs2 => {
+        const timestamps2 = helpers.getEventTimestamps($dateParagraphs2);
+
+        timestamps2.forEach(t => {
+          expect(
+            moment(t).format('MM'),
+            'Event month equals selected month',
+          ).to.eq(selectedMM);
+          expect(moment(t).format('DD'), 'Event day equals selected day').to.eq(
+            selectedDD,
+          );
+        });
+      });
+    });
+  });
+
+  it('shows past events sorted date-descending - C13856', () => {
     cy.get('[name="filterBy"]').select('past');
     cy.findByText(/apply filter/i, { selector: 'button' }).click();
-    cy.get('[data-testid="results-synopsis"]').should(
-      'include.text',
-      'Past events',
-    );
-    cy.get('[data-testid="event-date-time"]')
+    cy.findByTestId('results-query').should('have.text', 'Past events');
+    cy.get('[data-testclass="event-date-time"]')
       .should('have.length.gt', 0)
       .then($dateParagraphs => {
         const now = moment();
         const timestamps = helpers.getEventTimestamps($dateParagraphs);
-        expect(timestamps, 'Events are sorted date-ascending').to.be.descending;
+        expect(timestamps, 'Events are sorted date-descending').to.be
+          .descending;
         expect(
           moment(timestamps[0]).isBefore(now),
           'First sorted event is past',
