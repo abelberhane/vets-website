@@ -136,11 +136,14 @@ describe('Outreach Events', () => {
               'Pacific/Honolulu',
             )
             .valueOf();
+          const endYear =
+            parseInt(selectedEndMM, 10) > parseInt(selectedStartMM, 10)
+              ? moment().format('YYYY')
+              : moment().format('YYYY') + 1;
+          cy.log(`endYear: ${endYear}`);
           const selectedEndTimestamp = moment
             .tz(
-              `${moment().format(
-                'YYYY',
-              )}-${selectedEndMM}-${selectedEndDD} 23:59`,
+              `${endYear}-${selectedEndMM}-${selectedEndDD} 23:59`,
               'America/Puerto_Rico',
             )
             .valueOf();
