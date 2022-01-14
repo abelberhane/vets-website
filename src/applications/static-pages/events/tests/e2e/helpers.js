@@ -33,3 +33,18 @@ export const getEventTimestamps = $dateParagraphs => {
   );
   return Cypress._.map(startDateTimes, d => d.valueOf());
 };
+
+export const getRandomDates = timestamps => {
+  const tsTotal = timestamps.length;
+
+  switch (tsTotal) {
+    case tsTotal >= 10:
+      return [moment(timestamps[3]), moment(timestamps[6])];
+    case tsTotal >= 8 && tsTotal < 10:
+      return [moment(timestamps[2]), moment(timestamps[tsTotal - 3])];
+    case tsTotal >= 4 && tsTotal < 8:
+      return [moment(timestamps[1]), moment(timestamps[tsTotal - 2])];
+    default:
+      return [moment(timestamps[0]), moment(timestamps[tsTotal - 1])];
+  }
+};

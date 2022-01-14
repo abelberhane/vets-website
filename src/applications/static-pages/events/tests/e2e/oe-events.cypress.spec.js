@@ -104,17 +104,13 @@ describe('Outreach Events', () => {
   });
 
   it('shows custom-date-range events - C13902', () => {
-    // TODO: Get random date-range instead of first-through-last.
     cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
       const timestamps = helpers.getEventTimestamps($dateParagraphs);
-      const selectedStartMM = moment(timestamps[0]).format('MM');
-      const selectedStartDD = moment(timestamps[0]).format('DD');
-      const selectedEndMM = moment(timestamps[timestamps.length - 1]).format(
-        'MM',
-      );
-      const selectedEndDD = moment(timestamps[timestamps.length - 1]).format(
-        'DD',
-      );
+      const randomDates = helpers.getRandomDates(timestamps);
+      const selectedStartMM = randomDates[0].format('MM');
+      const selectedStartDD = randomDates[0].format('DD');
+      const selectedEndMM = randomDates[1].format('MM');
+      const selectedEndDD = randomDates[1].format('DD');
 
       cy.get('[name="filterBy"]').select('custom-date-range');
       cy.get('[name="startDateMonth"]').select(selectedStartMM);
