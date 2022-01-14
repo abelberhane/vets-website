@@ -49,6 +49,7 @@ describe('Outreach Events', () => {
   });
 
   /* eslint-disable va/axe-check-required */
+  // Testing the same page & state as above, so no need to repeat AXE check.
   it('shows all upcoming events by default sorted date-ascending - C13152', () => {
     cy.get('[name="filterBy"]').should('have.value', 'upcoming');
     cy.findByTestId('results-query').should('have.text', 'All upcoming');
@@ -64,8 +65,10 @@ describe('Outreach Events', () => {
         ).to.be.true;
       });
   });
+  /* eslint-enable va/axe-check-required */
 
   it('shows specific-date events - C13855', () => {
+    // TODO: Pick random populated date instead of first.
     cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
       const timestamps = helpers.getEventTimestamps($dateParagraphs);
       const selectedMM = moment(timestamps[0]).format('MM');
@@ -76,19 +79,81 @@ describe('Outreach Events', () => {
       cy.get('[name="startDateDay"]').select(selectedDD);
       cy.findByText(/apply filter/i, { selector: 'button' }).click();
       cy.findByTestId('results-query').should('have.text', 'Specific date');
-      cy.get('[data-testclass="event-date-time"]').then($dateParagraphs2 => {
-        const timestamps2 = helpers.getEventTimestamps($dateParagraphs2);
+      cy.injectAxeThenAxeCheck();
 
-        timestamps2.forEach(t => {
-          expect(
-            moment(t).format('MM'),
-            'Event month equals selected month',
-          ).to.eq(selectedMM);
-          expect(moment(t).format('DD'), 'Event day equals selected day').to.eq(
-            selectedDD,
+      cy.get('[data-testclass="event-date-time"]').then(
+        $filteredDateParagraphs => {
+          const filteredTimestamps = helpers.getEventTimestamps(
+            $filteredDateParagraphs,
           );
-        });
-      });
+          const filteredTimestampMin = Math.min(...filteredTimestamps);
+          const filteredTimestampMax = Math.max(...filteredTimestamps);
+
+          expect(
+            moment(filteredTimestampMin).format('MM') === selectedMM &&
+              moment(filteredTimestampMin).format('DD') === selectedDD &&
+              moment(filteredTimestampMax).format('MM') === selectedMM &&
+              moment(filteredTimestampMax).format('DD') === selectedDD,
+            'All event-dates are same as selected-date',
+          ).to.be.true;
+        },
+      );
+    });
+  });
+
+  it('shows custom-date-range events - C13902', () => {
+    // TODO: Get random date-range instead of first-through-last.
+    cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
+      const timestamps = helpers.getEventTimestamps($dateParagraphs);
+      const selectedStartMM = moment(timestamps[0]).format('MM');
+      const selectedStartDD = moment(timestamps[0]).format('DD');
+      const selectedEndMM = moment(timestamps[timestamps.length - 1]).format(
+        'MM',
+      );
+      const selectedEndDD = moment(timestamps[timestamps.length - 1]).format(
+        'DD',
+      );
+
+      cy.get('[name="filterBy"]').select('custom-date-range');
+      cy.get('[name="startDateMonth"]').select(selectedStartMM);
+      cy.get('[name="startDateDay"]').select(selectedStartDD);
+      cy.get('[name="endDateMonth"]').select(selectedEndMM);
+      cy.get('[name="endDateDay"]').select(selectedEndDD);
+      cy.findByText(/apply filter/i, { selector: 'button' }).click();
+      cy.findByTestId('results-query').should('have.text', 'Custom date range');
+      cy.injectAxeThenAxeCheck();
+
+      cy.get('[data-testclass="event-date-time"]').then(
+        $filteredDateParagraphs => {
+          const filteredTimestamps = helpers.getEventTimestamps(
+            $filteredDateParagraphs,
+          );
+          const filteredTimestampMin = Math.min(...filteredTimestamps);
+          const filteredTimestampMax = Math.max(...filteredTimestamps);
+          const selectedStartTimestamp = moment
+            .tz(
+              `${moment().format(
+                'YYYY',
+              )}-${selectedStartMM}-${selectedStartDD} 00:01`,
+              'Pacific/Honolulu',
+            )
+            .valueOf();
+          const selectedEndTimestamp = moment
+            .tz(
+              `${moment().format(
+                'YYYY',
+              )}-${selectedEndMM}-${selectedEndDD} 23:59`,
+              'America/Puerto_Rico',
+            )
+            .valueOf();
+
+          expect(
+            filteredTimestampMin >= selectedStartTimestamp &&
+              filteredTimestampMax <= selectedEndTimestamp,
+            'All event timestamps are within selected range',
+          ).to.be.true;
+        },
+      );
     });
   });
 
@@ -96,6 +161,8 @@ describe('Outreach Events', () => {
     cy.get('[name="filterBy"]').select('past');
     cy.findByText(/apply filter/i, { selector: 'button' }).click();
     cy.findByTestId('results-query').should('have.text', 'Past events');
+    cy.injectAxeThenAxeCheck();
+
     cy.get('[data-testclass="event-date-time"]')
       .should('have.length.gt', 0)
       .then($dateParagraphs => {
@@ -109,5 +176,4 @@ describe('Outreach Events', () => {
         ).to.be.true;
       });
   });
-  /* eslint-enable va/axe-check-required */
 });
