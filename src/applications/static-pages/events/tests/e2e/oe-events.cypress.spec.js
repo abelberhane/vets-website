@@ -68,11 +68,13 @@ describe('Outreach Events', () => {
   /* eslint-enable va/axe-check-required */
 
   it('shows specific-date events - C13855', () => {
-    // TODO: Pick random populated date instead of first.
     cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
       const timestamps = helpers.getEventTimestamps($dateParagraphs);
-      const selectedMM = moment(timestamps[0]).format('MM');
-      const selectedDD = moment(timestamps[0]).format('DD');
+      const randomDate = moment(
+        timestamps[Math.floor(Math.random() * timestamps.length)],
+      );
+      const selectedMM = randomDate.format('MM');
+      const selectedDD = randomDate.format('DD');
 
       cy.get('[name="filterBy"]').select('specific-date');
       cy.get('[name="startDateMonth"]').select(selectedMM);
