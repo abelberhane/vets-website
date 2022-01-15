@@ -137,7 +137,9 @@ describe('Outreach Events', () => {
             )
             .valueOf();
           const endYear =
-            parseInt(selectedEndMM, 10) > parseInt(selectedStartMM, 10)
+            parseInt(selectedEndMM, 10) > parseInt(selectedStartMM, 10) ||
+            (parseInt(selectedEndMM, 10) === parseInt(selectedStartMM, 10) &&
+              parseInt(selectedEndDD, 10) >= parseInt(selectedStartDD, 10))
               ? moment().format('YYYY')
               : moment().format('YYYY') + 1;
           cy.log(`endYear: ${endYear}`);
