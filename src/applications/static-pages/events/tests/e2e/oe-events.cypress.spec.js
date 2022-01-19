@@ -10,12 +10,11 @@
 
 import moment from 'moment-timezone';
 
+import { perPage } from '../../components/Events/constants';
+import e2eConstants from './fixtures/constants';
 import * as helpers from './helpers';
 
 describe('Outreach Events', () => {
-  const contentHost = 'localhost:3002';
-  const pagePath = '/outreach-and-events/events/';
-
   before(function() {
     // Can't run in CI because page requires content-build server too.
     if (Cypress.env('CI')) this.skip();
@@ -37,8 +36,10 @@ describe('Outreach Events', () => {
         ],
       },
     }).as('features');
-    cy.visit(`http://${contentHost}${pagePath}`);
-    cy.location('pathname').should('eq', pagePath);
+    cy.visit(
+      `http://localhost:${e2eConstants.CONTENT_PORT}${e2eConstants.PAGE_PATH}`,
+    );
+    cy.location('pathname').should('eq', e2eConstants.PAGE_PATH);
   });
 
   it('loads page with accessible content - C13151', () => {
@@ -53,23 +54,48 @@ describe('Outreach Events', () => {
   it('shows all upcoming events by default sorted date-ascending - C13152', () => {
     cy.get('[name="filterBy"]').should('have.value', 'upcoming');
     cy.findByTestId('results-query').should('have.text', 'All upcoming');
-    cy.get('[data-testclass="event-date-time"]')
-      .should('have.length.gt', 0)
-      .then($dateParagraphs => {
-        const now = moment();
-        const timestamps = helpers.getEventTimestamps($dateParagraphs);
-        expect(timestamps, 'Events are sorted date-ascending').to.be.ascending;
-        expect(
-          moment(timestamps[0]).isAfter(now),
-          'First sorted event is future',
-        ).to.be.true;
-      });
+    cy.window().then(win => {
+      const events = win.allEventTeasers.entities;
+      const eventsTotal = events.length;
+      const pagesTotal = helpers.getPagesTotal(events);
+      cy.findByTestId('results-total').should(
+        'have.text',
+        eventsTotal.toString(),
+      );
+      cy.get('[data-testclass="event-date-time"]')
+        .should('have.length', eventsTotal >= 10 ? 10 : eventsTotal)
+        .then($dateParagraphs => {
+          const now = moment();
+          const timestamps = helpers.getResultTimestamps($dateParagraphs);
+          expect(timestamps, 'Events are sorted date-ascending').to.be
+            .ascending;
+          expect(
+            moment(timestamps[0]).isAfter(now),
+            'First sorted event is future',
+          ).to.be.true;
+        });
+      if (pagesTotal > 1) {
+        cy.get('.va-pagination-inner')
+          .should('exist')
+          .within(() => {
+            cy.get('a')
+              .last()
+              .invoke('text')
+              .then(txt => {
+                expect(
+                  txt.trim(),
+                  'Pages-total is correct for events-total',
+                ).to.equal(pagesTotal.toString());
+              });
+          });
+      }
+    });
   });
   /* eslint-enable va/axe-check-required */
 
   it('shows specific-date events - C13855', () => {
     cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
-      const timestamps = helpers.getEventTimestamps($dateParagraphs);
+      const timestamps = helpers.getResultTimestamps($dateParagraphs);
       const randomDate = moment(
         timestamps[Math.floor(Math.random() * timestamps.length)],
       );
@@ -83,80 +109,133 @@ describe('Outreach Events', () => {
       cy.findByTestId('results-query').should('have.text', 'Specific date');
       cy.injectAxeThenAxeCheck();
 
-      cy.get('[data-testclass="event-date-time"]').then(
-        $filteredDateParagraphs => {
-          const filteredTimestamps = helpers.getEventTimestamps(
-            $filteredDateParagraphs,
-          );
-          const filteredTimestampMin = Math.min(...filteredTimestamps);
-          const filteredTimestampMax = Math.max(...filteredTimestamps);
+      cy.window().then(win => {
+        const events = win.allEventTeasers.entities;
+        const filteredEvents = helpers.getSpecificDateEvents(
+          selectedMM,
+          selectedDD,
+          events,
+        );
+        const filteredEventsTotal = filteredEvents.length;
+        const filteredPagesTotal = helpers.getPagesTotal(filteredEvents);
+        cy.log('filteredEvents:', filteredEvents);
+        cy.log('filteredEventsTotal:', filteredEventsTotal);
+        cy.log('filteredPagesTotal:', filteredPagesTotal);
+        cy.findByTestId('results-total').should(
+          'have.text',
+          filteredEventsTotal.toString(),
+        );
 
-          expect(
-            moment(filteredTimestampMin).format('MM') === selectedMM &&
-              moment(filteredTimestampMin).format('DD') === selectedDD &&
-              moment(filteredTimestampMax).format('MM') === selectedMM &&
-              moment(filteredTimestampMax).format('DD') === selectedDD,
-            'All event-dates are same as selected-date',
-          ).to.be.true;
-        },
-      );
+        cy.get('[data-testclass="event-date-time"]')
+          .first()
+          .then($dateParagraph => {
+            const firstDatetime = helpers.getResultDatetime($dateParagraph);
+            expect(
+              firstDatetime.format('MM-DD'),
+              'first event date matches selected date',
+            ).to.equal(`${selectedMM}-${selectedDD}`);
+          });
+
+        if (filteredPagesTotal === 1) {
+          cy.get('[data-testclass="event-date-time"]')
+            .last()
+            .then($dateParagraph => {
+              const lastDatetime = helpers.getResultDatetime($dateParagraph);
+              expect(
+                lastDatetime.format('MM-DD'),
+                'last event date matches selected date',
+              ).to.equal(`${selectedMM}-${selectedDD}`);
+            });
+        } else {
+          cy.get('.va-pagination-inner a')
+            .last()
+            .click();
+          cy.findByTestId('results-start')
+            .invoke('text')
+            .then(txt => {
+              cy.log(`results-start txt: ${txt}`);
+              expect(parseInt(txt.trim(), 10)).to.equal(filteredPagesTotal);
+            });
+          cy.get('[data-testclass="event-date-time"]')
+            .last()
+            .then($dateParagraph => {
+              const lastDatetime = helpers.getResultDatetime($dateParagraph);
+              expect(
+                lastDatetime.format('MM-DD'),
+                'last event date matches selected date',
+              ).to.equal(`${selectedMM}-${selectedDD}`);
+            });
+        }
+      });
     });
   });
 
   it('shows custom-date-range events - C13902', () => {
-    cy.get('[data-testclass="event-date-time"]').then($dateParagraphs => {
-      const timestamps = helpers.getEventTimestamps($dateParagraphs);
-      const randomDates = helpers.getRandomDates(timestamps);
-      const selectedStartMM = randomDates[0].format('MM');
-      const selectedStartDD = randomDates[0].format('DD');
-      const selectedEndMM = randomDates[1].format('MM');
-      const selectedEndDD = randomDates[1].format('DD');
+    cy.window().then(win => {
+      const sortedEvents = helpers.sortUpcomingEvents(
+        win.allEventTeasers.entities,
+      );
+      const desiredDates = helpers.getRandomEventDates(sortedEvents);
+      const desiredStartMM = desiredDates[0].format('MM');
+      const desiredStartDD = desiredDates[0].format('DD');
+      const desiredEndMM = desiredDates[1].format('MM');
+      const desiredEndDD = desiredDates[1].format('DD');
+      const filteredEvents = helpers.getDateRangeEvents(
+        desiredDates,
+        sortedEvents,
+      );
+      const filteredEventsTotal = filteredEvents.length;
+      const filteredPagesTotal = helpers.getPagesTotal(filteredEvents);
+      cy.log('filteredEvents:', filteredEvents);
+      cy.log('filteredPagesTotal:', filteredPagesTotal);
 
       cy.get('[name="filterBy"]').select('custom-date-range');
-      cy.get('[name="startDateMonth"]').select(selectedStartMM);
-      cy.get('[name="startDateDay"]').select(selectedStartDD);
-      cy.get('[name="endDateMonth"]').select(selectedEndMM);
-      cy.get('[name="endDateDay"]').select(selectedEndDD);
+      cy.get('[name="startDateMonth"]').select(desiredStartMM);
+      cy.get('[name="startDateDay"]').select(desiredStartDD);
+      cy.get('[name="endDateMonth"]').select(desiredEndMM);
+      cy.get('[name="endDateDay"]').select(desiredEndDD);
       cy.findByText(/apply filter/i, { selector: 'button' }).click();
       cy.findByTestId('results-query').should('have.text', 'Custom date range');
+      cy.findByTestId('results-total').should(
+        'have.text',
+        filteredEventsTotal.toString(),
+      );
+
       cy.injectAxeThenAxeCheck();
 
-      cy.get('[data-testclass="event-date-time"]').then(
-        $filteredDateParagraphs => {
-          const filteredTimestamps = helpers.getEventTimestamps(
-            $filteredDateParagraphs,
-          );
-          const filteredTimestampMin = Math.min(...filteredTimestamps);
-          const filteredTimestampMax = Math.max(...filteredTimestamps);
-          const selectedStartTimestamp = moment
-            .tz(
-              `${moment().format(
-                'YYYY',
-              )}-${selectedStartMM}-${selectedStartDD} 00:01`,
-              'Pacific/Honolulu',
-            )
-            .valueOf();
-          const endYear =
-            parseInt(selectedEndMM, 10) > parseInt(selectedStartMM, 10) ||
-            (parseInt(selectedEndMM, 10) === parseInt(selectedStartMM, 10) &&
-              parseInt(selectedEndDD, 10) >= parseInt(selectedStartDD, 10))
-              ? moment().format('YYYY')
-              : moment().format('YYYY') + 1;
-          cy.log(`endYear: ${endYear}`);
-          const selectedEndTimestamp = moment
-            .tz(
-              `${endYear}-${selectedEndMM}-${selectedEndDD} 23:59`,
-              'America/Puerto_Rico',
-            )
-            .valueOf();
+      cy.get('[data-testclass="event-date-time"]')
+        .first()
+        .then($dateParagraph => {
+          const startResultDatetime = helpers.getResultDatetime($dateParagraph);
+          cy.log('startResultDatetime:', startResultDatetime);
 
           expect(
-            filteredTimestampMin >= selectedStartTimestamp &&
-              filteredTimestampMax <= selectedEndTimestamp,
-            'All event timestamps are within selected range',
+            startResultDatetime.isSameOrAfter(desiredDates[0], 'day'),
+            'first result is on/after desired start-date',
           ).to.be.true;
-        },
-      );
+        });
+
+      if (filteredPagesTotal > 1) {
+        cy.get('.va-pagination-inner')
+          .last()
+          .scrollIntoView()
+          .find('a')
+          .last()
+          .click({ force: true });
+        cy.location('pathname').should(
+          'include',
+          `/page-${filteredPagesTotal}`,
+        );
+      }
+      cy.get('[data-testclass="event-date-time"]')
+        .last()
+        .then($dateParagraph => {
+          const lastDatetime = helpers.getResultDatetime($dateParagraph);
+          expect(
+            lastDatetime.isSameOrBefore(desiredDates[1], 'day'),
+            'last result is on/before desired end-date',
+          ).to.be.true;
+        });
     });
   });
 
@@ -170,7 +249,7 @@ describe('Outreach Events', () => {
       .should('have.length.gt', 0)
       .then($dateParagraphs => {
         const now = moment();
-        const timestamps = helpers.getEventTimestamps($dateParagraphs);
+        const timestamps = helpers.getResultTimestamps($dateParagraphs);
         expect(timestamps, 'Events are sorted date-descending').to.be
           .descending;
         expect(
