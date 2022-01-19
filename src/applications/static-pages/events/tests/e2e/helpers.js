@@ -1,10 +1,19 @@
 import moment from 'moment-timezone';
 import { perPage } from '../../components/Events/constants';
 
-export const sortUpcomingEvents = events => {
+// TODO: Rename sort methods to explicitly indicate ascending/descending.
+
+export const sortEventsDateAscending = events => {
   return events.sort(
     (a, b) =>
       a.fieldDatetimeRangeTimezone.value - b.fieldDatetimeRangeTimezone.value,
+  );
+};
+
+export const sortEventsDateDescending = events => {
+  return events.sort(
+    (a, b) =>
+      b.fieldDatetimeRangeTimezone.value - a.fieldDatetimeRangeTimezone.value,
   );
 };
 
@@ -29,7 +38,6 @@ export const getTimezoneName = tzAbbr => {
 };
 
 export const getResultDatetime = $dateParagraph => {
-  console.log('$dateParagraph:', $dateParagraph);
   const dateTimeRangeString = $dateParagraph.text();
   const startDateTimeString =
     dateTimeRangeString
@@ -106,7 +114,7 @@ export const getSpecificDateEvents = (desiredMM, desiredDD, events) => {
 };
 
 export const getDateRangeEvents = (desiredDates, events) => {
-  return sortUpcomingEvents(
+  return sortEventsDateAscending(
     events.filter(evt => {
       const evtDate = moment(evt.fieldDatetimeRangeTimezone.value * 1000);
 

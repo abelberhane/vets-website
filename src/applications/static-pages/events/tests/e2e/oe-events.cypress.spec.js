@@ -7,10 +7,11 @@
  */
 
 // IMPORTANT: This spec should NOT be run in CI.  Page-under-test is "semi-static," requiring BOTH content-build & vets-website local-servers to be running.
+// BEFORE RUNNING THIS SPEC, run vets-website yarn build, then content-build yarn watch, then vets-website yarn watch.
 
 import moment from 'moment-timezone';
 
-import { perPage } from '../../components/Events/constants';
+import * as cmpConstants from '../../components/Events/constants';
 import e2eConstants from './fixtures/constants';
 import * as helpers from './helpers';
 
@@ -55,15 +56,19 @@ describe('Outreach Events', () => {
     cy.get('[name="filterBy"]').should('have.value', 'upcoming');
     cy.findByTestId('results-query').should('have.text', 'All upcoming');
     cy.window().then(win => {
-      const events = win.allEventTeasers.entities;
-      const eventsTotal = events.length;
-      const pagesTotal = helpers.getPagesTotal(events);
+      const sortedEvents = helpers.sortEventsDateAscending(
+        win.allEventTeasers.entities,
+      );
+      const sortedEventsTotal = sortedEvents.length;
+      const pagesTotal = helpers.getPagesTotal(sortedEvents);
+      cy.log(`sortedEventsTotal: ${sortedEventsTotal}`);
+
       cy.findByTestId('results-total').should(
         'have.text',
-        eventsTotal.toString(),
+        sortedEventsTotal.toString(),
       );
       cy.get('[data-testclass="event-date-time"]')
-        .should('have.length', eventsTotal >= 10 ? 10 : eventsTotal)
+        .should('have.length', sortedEventsTotal >= 10 ? 10 : sortedEventsTotal)
         .then($dateParagraphs => {
           const now = moment();
           const timestamps = helpers.getResultTimestamps($dateParagraphs);
@@ -71,14 +76,14 @@ describe('Outreach Events', () => {
             .ascending;
           expect(
             moment(timestamps[0]).isAfter(now),
-            'First sorted event is future',
+            'First sorted result is future',
           ).to.be.true;
         });
       if (pagesTotal > 1) {
         cy.get('.va-pagination-inner')
           .should('exist')
           .within(() => {
-            cy.get('a')
+            cy.get('a:not(.va-pagination-active)')
               .last()
               .invoke('text')
               .then(txt => {
@@ -118,15 +123,18 @@ describe('Outreach Events', () => {
         );
         const filteredEventsTotal = filteredEvents.length;
         const filteredPagesTotal = helpers.getPagesTotal(filteredEvents);
-        cy.log('filteredEvents:', filteredEvents);
         cy.log('filteredEventsTotal:', filteredEventsTotal);
-        cy.log('filteredPagesTotal:', filteredPagesTotal);
+
         cy.findByTestId('results-total').should(
           'have.text',
           filteredEventsTotal.toString(),
         );
 
         cy.get('[data-testclass="event-date-time"]')
+          .should(
+            'have.length',
+            filteredEventsTotal >= 10 ? 10 : filteredEventsTotal,
+          )
           .first()
           .then($dateParagraph => {
             const firstDatetime = helpers.getResultDatetime($dateParagraph);
@@ -154,7 +162,10 @@ describe('Outreach Events', () => {
             .invoke('text')
             .then(txt => {
               cy.log(`results-start txt: ${txt}`);
-              expect(parseInt(txt.trim(), 10)).to.equal(filteredPagesTotal);
+              expect(
+                parseInt(txt.trim(), 10),
+                'results-start is correct for page',
+              ).to.equal((filteredPagesTotal - 1) * cmpConstants.perPage - 1);
             });
           cy.get('[data-testclass="event-date-time"]')
             .last()
@@ -172,7 +183,7 @@ describe('Outreach Events', () => {
 
   it('shows custom-date-range events - C13902', () => {
     cy.window().then(win => {
-      const sortedEvents = helpers.sortUpcomingEvents(
+      const sortedEvents = helpers.sortEventsDateAscending(
         win.allEventTeasers.entities,
       );
       const desiredDates = helpers.getRandomEventDates(sortedEvents);
@@ -186,8 +197,7 @@ describe('Outreach Events', () => {
       );
       const filteredEventsTotal = filteredEvents.length;
       const filteredPagesTotal = helpers.getPagesTotal(filteredEvents);
-      cy.log('filteredEvents:', filteredEvents);
-      cy.log('filteredPagesTotal:', filteredPagesTotal);
+      cy.log('filteredEventsTotal:', filteredPagesTotal);
 
       cy.get('[name="filterBy"]').select('custom-date-range');
       cy.get('[name="startDateMonth"]').select(desiredStartMM);
@@ -204,6 +214,10 @@ describe('Outreach Events', () => {
       cy.injectAxeThenAxeCheck();
 
       cy.get('[data-testclass="event-date-time"]')
+        .should(
+          'have.length',
+          filteredEventsTotal >= 10 ? 10 : filteredEventsTotal,
+        )
         .first()
         .then($dateParagraph => {
           const startResultDatetime = helpers.getResultDatetime($dateParagraph);
@@ -240,22 +254,42 @@ describe('Outreach Events', () => {
   });
 
   it('shows past events sorted date-descending - C13856', () => {
-    cy.get('[name="filterBy"]').select('past');
-    cy.findByText(/apply filter/i, { selector: 'button' }).click();
-    cy.findByTestId('results-query').should('have.text', 'Past events');
-    cy.injectAxeThenAxeCheck();
+    cy.window().then(win => {
+      const pastEvents = win.pastEvents.entities;
+      const sortedEvents = helpers.sortEventsDateDescending(pastEvents);
+      const eventsTotal = sortedEvents.length;
+      const pagesTotal = helpers.getPagesTotal(sortedEvents);
+      cy.log(`eventsTotal: ${eventsTotal}; pagesTotal: ${pagesTotal}`);
 
-    cy.get('[data-testclass="event-date-time"]')
-      .should('have.length.gt', 0)
-      .then($dateParagraphs => {
-        const now = moment();
-        const timestamps = helpers.getResultTimestamps($dateParagraphs);
-        expect(timestamps, 'Events are sorted date-descending').to.be
-          .descending;
-        expect(
-          moment(timestamps[0]).isBefore(now),
-          'First sorted event is past',
-        ).to.be.true;
-      });
+      cy.get('[name="filterBy"]').select('past');
+      cy.findByText(/apply filter/i, { selector: 'button' }).click();
+      cy.findByTestId('results-query').should('have.text', 'Past events');
+
+      cy.injectAxeThenAxeCheck();
+
+      cy.get('[data-testclass="event-date-time"]')
+        .should('have.length', pagesTotal > 1 ? 10 : eventsTotal)
+        .then($dateParagraphs => {
+          const now = moment();
+          const timestamps = helpers.getResultTimestamps($dateParagraphs);
+          expect(timestamps, 'Events are sorted date-descending').to.be
+            .descending;
+          expect(
+            moment(timestamps[0]).isBefore(now),
+            'First sorted result is past',
+          ).to.be.true;
+        });
+      if (pagesTotal > 1) {
+        cy.get('.va-pagination-inner')
+          .should('exist')
+          .within(() => {
+            cy.get('a:not(.va-pagination-active)').then($links => {
+              cy.log('Pagination-links:', $links);
+              cy.log(`First link text: ${$links.first().text()}`);
+              cy.log(`Last link text: ${$links.last().text()}`);
+            });
+          });
+      }
+    });
   });
 });
