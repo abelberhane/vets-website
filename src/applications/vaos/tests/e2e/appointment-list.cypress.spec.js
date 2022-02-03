@@ -1,9 +1,9 @@
+import Timeouts from 'platform/testing/e2e/timeouts';
 import {
   initAppointmentListMock,
   createPastVAAppointments,
   mockFeatureToggles,
 } from './vaos-cypress-helpers';
-import Timeouts from 'platform/testing/e2e/timeouts';
 
 describe('VAOS appointment list', () => {
   beforeEach(() => {
@@ -133,7 +133,7 @@ describe('VAOS appointment list', () => {
       cy.get('[data-cy=upcoming-appointment-list-header]').should('exist');
       cy.get('[data-cy=upcoming-appointment-list]').should('exist');
       cy.get('#type-dropdown').should('exist');
-      cy.get('[data-cy=appointment-list-item]')
+      cy.get('[data-cy=appointment-list-item]', { timeout: Timeouts.slow })
         .first()
         .should('exist');
       cy.axeCheckBestPractice();
@@ -163,7 +163,9 @@ describe('VAOS appointment list', () => {
 
     it('should render requested appointments list', () => {
       cy.get('[data-cy=requested-appointment-list]').should('exist');
-      cy.get('[data-cy=requested-appointment-list-item]')
+      cy.get('[data-cy=requested-appointment-list-item]', {
+        timeout: Timeouts.slow,
+      })
         .first()
         .should('exist');
       cy.axeCheckBestPractice();
@@ -196,7 +198,7 @@ describe('VAOS appointment list', () => {
       cy.findByLabelText(/Select a date range/i).should('exist');
       cy.get('[data-cy=past-appointment-list]').should('exist');
       cy.get('[data-cy=past-appointment-list-header]').should('exist');
-      cy.get('[data-cy=appointment-list-item]')
+      cy.get('[data-cy=appointment-list-item]', { timeout: Timeouts.slow })
         .first()
         .should('exist');
       cy.axeCheckBestPractice();
@@ -220,7 +222,7 @@ describe('VAOS appointment list', () => {
       cy.get('button')
         .contains(/Update/i)
         .click();
-      cy.get('h3').should('exist');
+      cy.get('h3').should('exist', { timeout: Timeouts.slow });
       cy.axeCheckBestPractice();
     });
   });
@@ -242,7 +244,7 @@ describe('VAOS appointment list', () => {
     });
 
     it('should navigate to canceled appointment details', () => {
-      cy.get('[data-cy=appointment-list-item]')
+      cy.get('[data-cy=appointment-list-item]', { timeout: Timeouts.slow })
         .first()
         .findByText(/Details/i)
         .focus()
