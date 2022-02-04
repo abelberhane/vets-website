@@ -1,9 +1,9 @@
 import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
-import ValidateDisplay from './ValidateDisplay';
 import sinon from 'sinon';
 import { axeCheck } from 'platform/forms-system/test/config/helpers';
+import ValidateDisplay from './ValidateDisplay';
 
 describe('check-in experience', () => {
   describe('shared components', () => {
@@ -23,6 +23,7 @@ describe('check-in experience', () => {
       });
       it('renders the footer if footer is supplied', () => {
         const { getByText } = render(
+          // eslint-disable-next-line react/jsx-no-bind
           <ValidateDisplay Footer={() => <div>foo</div>} />,
         );
 
@@ -38,12 +39,12 @@ describe('check-in experience', () => {
 
         expect(getByText('foo')).to.exist;
       });
-      it('renders loading message if isLoading is true', () => {
-        const { getByText } = render(<ValidateDisplay isLoading />);
+      it('renders loading message with status role if isLoading is true', () => {
+        const { getByRole } = render(<ValidateDisplay isLoading />);
 
-        expect(getByText('Loading...')).to.exist;
+        expect(getByRole('status')).to.have.text('Loading...');
       });
-      it('renders loading message if isLoading is true', () => {
+      it('renders continue button if isLoading false', () => {
         const { getByText } = render(<ValidateDisplay isLoading={false} />);
 
         expect(getByText('Continue')).to.exist;

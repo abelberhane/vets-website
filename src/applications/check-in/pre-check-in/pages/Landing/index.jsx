@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import propTypes from 'prop-types';
 
 import recordEvent from 'platform/monitoring/record-event';
 
@@ -19,6 +20,8 @@ import {
 
 import { URLS } from '../../../utils/navigation';
 import { isUUID, SCOPES } from '../../../utils/token-format-validator';
+import { setApp } from '../../../actions/universal';
+import { APP_NAMES } from '../../../utils/appConstants';
 
 export default function Index(props) {
   const [loadMessage] = useState('Finding your appointment information');
@@ -41,7 +44,12 @@ export default function Index(props) {
   const { router } = props;
   const { goToErrorPage, jumpToPage } = useFormRouting(router);
   const { clearCurrentSession, setCurrentToken } = useSessionStorage();
-
+  useEffect(
+    () => {
+      dispatch(setApp(APP_NAMES.PRE_CHECK_IN));
+    },
+    [dispatch],
+  );
   useEffect(
     () => {
       const token = getTokenFromLocation(router.location);
@@ -105,3 +113,7 @@ export default function Index(props) {
     </>
   );
 }
+
+Index.propTypes = {
+  router: propTypes.object,
+};
