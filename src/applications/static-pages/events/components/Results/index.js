@@ -36,18 +36,14 @@ export const Results = ({
     <>
       {/* Showing 10 results for All upcoming */}
       {results && (
-        <p
-          className="vads-u-margin--0 vads-u-margin-top--2 vads-u-margin-bottom--1"
-          data-testid="results-synopsis"
-        >
-          Displaying{' '}
-          <span data-testid="results-start">{resultsStartNumber}</span>
+        <h2 className="vads-u-margin--0 vads-u-margin-top--2 vads-u-margin-bottom--1 vads-u-font-size--base vads-u-font-weight--normal">
+          <span>Displaying {resultsStartNumber}</span>
           <span className="vads-u-visibility--screen-reader">through</span>
           <span aria-hidden="true">&ndash;</span>
-          <span data-testid="results-end">{resultsEndNumber}</span> of{' '}
+          <span><span data-testid="results-end">{resultsEndNumber}</span> of{' '}
           <span data-testid="results-total">{totalResults}</span> results for{' '}
-          <strong data-testid="results-query">{query}</strong>
-        </p>
+          <strong data-testid="results-query">{query}</strong></span>
+        </h2>
       )}
 
       {/* Events */}
@@ -76,7 +72,8 @@ export const Results = ({
               .format('h:mm a');
             const endsAtTimezone = moment
               .tz(endsAtUnix * 1000, timezone)
-              .format('z');
+              .format('z')
+              .replace('S', '');
 
             // Derive the event locations.
             const locations = deriveEventLocations(event);
@@ -88,12 +85,9 @@ export const Results = ({
                 data-testclass="event-wrapper"
               >
                 {/* Title */}
-                <h2
-                  className="vads-u-margin--0 vads-u-font-size--h4"
-                  data-testclass="event-title"
-                >
+                <h3 className="vads-u-margin--0 vads-u-font-size--h4" data-testclass="event-title">
                   <a href={entityUrl.path}>{title}</a>
-                </h2>
+                </h3>
 
                 {/* Description */}
                 <p
