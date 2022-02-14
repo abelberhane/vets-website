@@ -4,6 +4,7 @@ import moment from 'moment';
 import testForm from 'platform/testing/e2e/cypress/support/form-tester';
 import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-tester/utilities';
 
+import { WIZARD_STATUS_COMPLETE } from 'platform/site-wide/wizard';
 import mockFeatureToggles from './fixtures/mocks/feature-toggles.json';
 import mockInProgress from './fixtures/mocks/in-progress-forms.json';
 import mockLocations from './fixtures/mocks/separation-locations.json';
@@ -22,7 +23,6 @@ import {
   SHOW_8940_4192,
   SAVED_SEPARATION_DATE,
 } from '../constants';
-import { WIZARD_STATUS_COMPLETE } from 'platform/site-wide/wizard';
 
 const todayPlus120 = moment()
   .add(120, 'days')
@@ -33,17 +33,7 @@ const testConfig = createTestConfig(
   {
     dataPrefix: 'data',
 
-    dataSets: [
-      'full-781-781a-8940-test.json',
-      'maximal-test',
-      // 'maximal-bdd-test',
-      'minimal-test',
-      // 'minimal-bdd-test',
-      'newOnly-test',
-      'secondary-new-test.json',
-      'upload-781-781a-8940-test.json',
-      'minimal-skip-781.json',
-    ],
+    dataSets: ['full-781-781a-8940-test.json'],
 
     fixtures: {
       data: path.join(__dirname, 'fixtures', 'data'),
@@ -139,7 +129,7 @@ const testConfig = createTestConfig(
             });
 
             cy.fillPage();
-            cy.findByText(/save/i, { selector: 'button' }).click();
+            cy.findByText(/sae/i, { selector: 'button' }).click();
           }
         });
       },
