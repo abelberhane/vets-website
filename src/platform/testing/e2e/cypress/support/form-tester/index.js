@@ -3,7 +3,7 @@ import { join, sep } from 'path';
 import get from 'platform/utilities/data/get';
 import disableFTUXModals from '~/platform/user/tests/disableFTUXModals';
 
-const APP_SELECTOR = '#react-root';
+const APP_SELECTOR = 'article';
 const ARRAY_ITEM_SELECTOR =
   'div[name^="topOfTable_"] ~ div.va-growable-background';
 const FIELD_SELECTOR = 'input, select, textarea';
@@ -293,8 +293,11 @@ Cypress.Commands.add('enterData', field => {
       break;
 
     case 'checkbox': {
-      if (field.data) cy.wrap(field.element).check(FORCE_OPTION);
-      else cy.wrap(field.element).uncheck(FORCE_OPTION);
+      if (field.data) {
+        cy.wrap(field.element).check(FORCE_OPTION);
+      } else {
+        cy.wrap(field.element).uncheck(FORCE_OPTION);
+      }
       break;
     }
 
@@ -340,7 +343,6 @@ Cypress.Commands.add('enterData', field => {
         .type(year, { ...FORCE_OPTION, ...NO_DELAY_OPTION });
 
       cy.get(`#${baseSelector}Month`).select(month, FORCE_OPTION);
-
       if (day !== 'XX') cy.get(`#${baseSelector}Day`).select(day, FORCE_OPTION);
 
       break;
@@ -399,7 +401,9 @@ Cypress.Commands.add('fillPage', () => {
         if (shouldSkipField) return;
 
         cy.findData({ ...field, arrayItemPath }).then(data => {
-          if (typeof data !== 'undefined') cy.enterData({ ...field, data });
+          if (typeof data !== 'undefined') {
+            cy.enterData({ ...field, data });
+          }
           touchedFields.add(field.key);
         });
       };
@@ -416,6 +420,7 @@ Cypress.Commands.add('fillPage', () => {
           .within(NO_LOG_OPTION, $form => {
             // Fill out every field that's currently on the page.
             const fields = $form.find(FIELD_SELECTOR);
+            cy.log(fields);
             if (!fields.length) return;
             cy.wrap(fields).each(element => {
               cy.wrap(createFieldObject(element), NO_LOG_OPTION).then(
@@ -543,7 +548,9 @@ const testForm = testConfig => {
 
           cy.get(LOADING_SELECTOR)
             .should('not.exist')
-            .then(() => processPage({ _13647Exception }));
+            .then(() => {
+              processPage({ _13647Exception });
+            });
         });
       });
 
