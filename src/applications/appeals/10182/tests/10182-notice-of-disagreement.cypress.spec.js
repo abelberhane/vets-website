@@ -1,3 +1,10 @@
+/**
+ * [TestRail-integrated] Spec for Notice of Disagreement [VA Form 10182]
+ * @testrailinfo projectId 5
+ * @testrailinfo suiteId 6
+ * @testrailinfo groupId 3688
+ * @testrailinfo runName NoD-e2e-FormTester
+ */
 import path from 'path';
 
 import testForm from 'platform/testing/e2e/cypress/support/form-tester';
@@ -18,7 +25,7 @@ const testConfig = createTestConfig(
     dataPrefix: 'data',
 
     // Rename and modify the test data as needed.
-    dataSets: ['maximal-test', 'minimal-test'],
+    dataSets: ['maximal-test-C12345', 'minimal-test-C54321'],
 
     fixtures: {
       data: path.join(__dirname, 'fixtures', 'data'),

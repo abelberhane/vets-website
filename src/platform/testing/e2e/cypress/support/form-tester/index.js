@@ -2,6 +2,7 @@ import { join, sep } from 'path';
 
 import get from 'platform/utilities/data/get';
 import disableFTUXModals from '~/platform/user/tests/disableFTUXModals';
+import { getTrCaseIdSuffixes } from './utilities';
 
 const APP_SELECTOR = '#react-root';
 const ARRAY_ITEM_SELECTOR =
@@ -496,6 +497,7 @@ const testForm = testConfig => {
     skippedTests.has?.(testKey)
       ? context.skip(testKey, callback)
       : context(testKey, callback);
+  const trCaseIdSuffixes = getTrCaseIdSuffixes(dataSets);
 
   testSuite(appName, () => {
     before(() => {
@@ -538,7 +540,7 @@ const testForm = testConfig => {
             .then(setupPerTest);
         });
 
-        it('fills the form', () => {
+        it(`fills the form ${trCaseIdSuffixes[testKey]}`, () => {
           cy.visit(rootUrl).injectAxe();
 
           cy.get(LOADING_SELECTOR)

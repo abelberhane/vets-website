@@ -36,3 +36,21 @@ export const createTestConfig = (config, manifest = {}, formConfig = {}) => {
   const arrayPages = createArrayPageObjects(formConfig);
   return { appName, arrayPages, rootUrl, ...config };
 };
+
+/**
+ * Returns an object with suffix-strings for any TestRail test case IDs found in dataSets' filenames.
+ * This enables Cypress-TestRail integration by appending test case IDs to the form-tester's Cypress test-description ('fills the form').
+ * @param {string[]} dataSets - User-defined string array of dataSet filepaths.
+ * @returns {Object} - Mapping of dataSet-filenames to TestRail test-case-ID suffixes [where IDs are found].
+ * Keys are dataSet filenames.  Values are suffix or empty strings.
+ */
+export const getTrCaseIdSuffixes = dataSets => {
+  const suffixes = {};
+
+  dataSets.forEach(ds => {
+    const currMatch = ds.match(/(?<=\W)C\d+$/);
+    suffixes[ds] = currMatch ? ` - ${currMatch}` : '';
+  });
+
+  return suffixes;
+};
