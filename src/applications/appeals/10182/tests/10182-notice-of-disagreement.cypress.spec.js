@@ -25,7 +25,7 @@ const testConfig = createTestConfig(
     dataPrefix: 'data',
 
     // Rename and modify the test data as needed.
-    dataSets: ['maximal-test-C12345', 'minimal-test-C54321'],
+    dataSets: ['maximal-test-C14435', 'minimal-test-C14436'],
 
     fixtures: {
       data: path.join(__dirname, 'fixtures', 'data'),

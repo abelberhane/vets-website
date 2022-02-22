@@ -4,7 +4,7 @@ import mockUser from './fixtures/mocks/user.json';
 import mockUserUpdate from './fixtures/mocks/user-update.json';
 import mockIssues from './fixtures/mocks/contestable-issues.json';
 import mockStatus from './fixtures/mocks/profile-status.json';
-import mockData from './fixtures/data/maximal-test.json';
+import mockData from './fixtures/data/maximal-test-C14435.json';
 import featureToggles from './fixtures/mocks/feature-toggles.json';
 import { mockContestableIssues } from './nod.cypress.helpers';
 

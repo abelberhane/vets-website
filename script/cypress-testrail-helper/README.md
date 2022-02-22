@@ -10,7 +10,8 @@ For basic TestRail help/info, see VSP's [TestRail docs][vsp-testrail-docs].
 
 You only need to follow these steps once:
 
-1. Integrate your Cypress spec-file with TestRail -- you should have a TestRail test-case group/section for your spec, and within it TestRail test-cases corresponding to your spec's tests.
+1. Integrate your Cypress spec-file with TestRail -- you should have a TestRail test-case group/section for your spec, and within it TestRail test-cases corresponding to your spec's tests. [See Platform team's [Cypress-TestRail-Reporter doc][vsp-cypress-testrail-reporter-doc]]
+   NOTE about **FORM-TESTER** specs: If you're integrating a [form-tester spec][vsp-form-tester], then append the TR test-case-ID suffixes to your dataSet filenames instead, and update your form-tester spec accordingly [e.g., `dataSets: ['minimal-test-C12345','maximal-test-C12346]`].
 1. In TestRail, click the green info-button next to one of your test-case's Case ID. An alert should be displayed, providing the case's parent Group ID and ancestor Project & Suite IDs.
 1. Integrate your Cypress spec-file with CTH -- prepend the following JSDOC comment to your spec [replacing `<placeholders>` with your actual values]:
 
@@ -62,5 +63,6 @@ IF this app's not working, [open a Bug in va.gov-team GitHub repo][va-gov-team-n
 [npm-cy-tr-reporter]: https://www.npmjs.com/package/cy-tr-reporter
 [vsp-testrail-docs]: https://depo-platform-documentation.scrollhelp.site/developer-docs/How-to-use-TestRail.1600684126.html
 [dsvavsp-testrail]: https://dsvavsp.testrail.io/
+[vsp-form-tester]: https://depo-platform-documentation.scrollhelp.site/developer-docs/Cypress-Form-Tester.1870331957.html
 [vsp-cypress-testrail-reporter-doc]: https://depo-platform-documentation.scrollhelp.site/developer-docs/Cypress-to-TestRail-Reporter-Plugin-Configuration.1738047581.html
 [va-gov-team-new-bug]: https://github.com/department-of-veterans-affairs/va.gov-team/issues/new?assignees=&labels=bug&template=bug-issue.md&title=
