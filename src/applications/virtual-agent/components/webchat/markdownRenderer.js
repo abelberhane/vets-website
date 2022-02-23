@@ -12,6 +12,17 @@ const markdownRenderer = MarkdownIt({
   },
 });
 
+const script = document.createElement('script');
+script.nonce = '**CSP_NONCE**';
+script.type = 'text/javascript';
+script.text =
+  'function recordLinkClick(data) {\n' +
+  '  console.log("in the script");\n' +
+  '  window.dataLayer && window.dataLayer.push(data);\n' +
+  '  return false;\n' +
+  '};';
+document.body.appendChild(script);
+
 // Remember old renderer, if overridden, or proxy to default renderer
 const defaultRender =
   markdownRenderer.renderer.rules.link_open ||
@@ -35,6 +46,11 @@ markdownRenderer.renderer.rules[linkOpen] = function(
 
     tokens[idx].attrPush(['aria-label', ariaLabel]); // add new attribute
   }
+
+  tokens[idx].attrPush([
+    'onclick',
+    'return recordLinkClick({event: "chatbot-resource-link-click"})',
+  ]);
 
   // pass token to default renderer.
   return defaultRender(tokens, idx, options, env, self);
