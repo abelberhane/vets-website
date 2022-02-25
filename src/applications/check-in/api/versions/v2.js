@@ -127,5 +127,40 @@ const v2 = {
       ...json,
     };
   },
+  patchDayOfDemographicsData: async ({
+    uuid,
+    demographicsUpToDate,
+    nextOfKinUpToDate,
+    emergencyContactUpToDate,
+  }) => {
+    const url = '/check_in/v2/demographics/';
+    const headers = { 'Content-Type': 'application/json' };
+    const data = {
+      demographics: {
+        demographicConfirmations: {
+          uuid,
+          demographicsUpToDate,
+          nextOfKinUpToDate,
+          emergencyContactUpToDate,
+        },
+      },
+    };
+    const body = JSON.stringify(data);
+    const settings = {
+      headers,
+      body,
+      method: 'PATCH',
+      mode: 'cors',
+    };
+
+    const json = await makeApiCallWithSentry(
+      apiRequest(`${environment.API_URL}${url}${uuid}`, settings),
+      'patch-demographics-update-flags',
+      uuid,
+    );
+    return {
+      ...json,
+    };
+  },
 };
 export { v2 };
