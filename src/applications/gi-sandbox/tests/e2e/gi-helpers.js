@@ -1,7 +1,20 @@
-import { createId, formatCurrency } from '../../utils/helpers';
 import calculatorConstantsJson from '../data/calculator-constants.json';
 import searchResults from '../data/search-results.json';
 import vetTecSearchResults from '../data/vet-tec-search-results.json';
+
+export const createId = name => name?.toLowerCase().replace(/\s/g, '-');
+
+export const formatNumber = value => {
+  const str = (+value).toString();
+  return `${str.replace(/\d(?=(\d{3})+$)/g, '$&,')}`;
+};
+
+export const formatCurrency = value => {
+  if (Number.isNaN(value)) {
+    return value;
+  }
+  return `$${formatNumber(Math.round(+value))}`;
+};
 
 export const displayLearnMoreModal = () => {
   cy.get('.learn-more-button')

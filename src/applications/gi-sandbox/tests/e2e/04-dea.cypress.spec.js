@@ -6,8 +6,10 @@ import {
   checkProfileHousingRate,
   breadCrumb,
   enrolledOld,
+  formatCurrency,
+  formatNumber,
 } from './gi-helpers';
-import { formatCurrency, formatNumber } from '../../utils/helpers';
+// import { formatCurrency, formatNumber } from '../../utils/helpers';
 import { mockTogglesResponse } from './mock-feature_toggles';
 
 const institutionProfile = require('../data/institution-profile.json');
