@@ -385,8 +385,8 @@ jobs:
       # | Run Cypress Code Coverage Report Generator |
       # -------------------------
 
-    # Build the artifact
-
+  code-coverage-cypress:
+    name: Code Coverage Report
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -408,9 +408,8 @@ jobs:
           if-no-files-found: error
           path: build
 
-    # Instrument coverage & upload
+      # Instrument coverage & upload
 
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
 
