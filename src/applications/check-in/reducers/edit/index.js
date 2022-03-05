@@ -46,6 +46,19 @@ const setPendingEditedData = (state, action) => {
       },
     };
   }
+  if (editingPage === EDITING_PAGE_NAMES.EMERGENCY_CONTACT) {
+    const nextEmergencyContact = {
+      ...demographics.emergencyContact,
+      ...fieldsToUpdate,
+    };
+    return {
+      ...state,
+      context: {
+        ...state.context,
+        pendingEdits: { emergencyContact: nextEmergencyContact },
+      },
+    };
+  }
   return { ...state };
 };
 
