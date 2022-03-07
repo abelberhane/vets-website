@@ -509,6 +509,16 @@ jobs:
     name: Code Coverage Report
     runs-on: self-hosted
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-gov-west-1
+
+      - name: Checkout vets-website
+        uses: actions/checkout@v2
+
       - name: Download production build artifact
         uses: actions/download-artifact@v2
         with:
@@ -520,9 +530,6 @@ jobs:
           tar -C build/vagovprod -xjf vagovprod.tar.bz2
 
       # Instrument coverage & upload
-
-      - name: Checkout
-        uses: actions/checkout@v2
 
       - name: 'UI Tests - Chrome'
         uses: cypress-io/github-action@v2.9.7
