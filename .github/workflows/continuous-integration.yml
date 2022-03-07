@@ -507,43 +507,22 @@ jobs:
 
   code-coverage-cypress:
     name: Code Coverage Report
-    runs-on: ubuntu-latest
-    needs: [set-commit-sha, determine-build-type]
-    continue-on-error: true
-    outputs:
-      app_list: ${{ env.APPLICATION_LIST }}
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Download production build artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: vagovprod.tar.bz2
 
-      - name: Cypress install
-        uses: cypress-io/github-action@v2.9.7
-        with:
-          runTests: false
-      # report machine parameters
-      - run: yarn cypress info
-      - run: node -p 'os.cpus()'
-      - run: yarn lint
-      - run: yarn build
-
-      - name: Save build folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          if-no-files-found: error
-          path: build
+      - name: Unpack build
+        run: |
+          mkdir -p build/vagovprod
+          tar -C build/vagovprod -xjf vagovprod.tar.bz2
 
       # Instrument coverage & upload
 
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
 
       - name: 'UI Tests - Chrome'
         uses: cypress-io/github-action@v2.9.7
